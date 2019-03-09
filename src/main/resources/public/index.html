@@ -9,44 +9,63 @@
 <!-- ~~~~~~ jquery ~~~~~~ -->
 <script src="/webjars/jquery/@jquery.version@/jquery.min.js"></script>
 <!-- ~~~~~~ bootstrap ~~~~~~ -->
-<link rel="stylesheet" href="/webjars/bootstrap/@bootstrap.version@/css/bootstrap.css">
+<link rel="stylesheet"
+	href="/webjars/bootstrap/@bootstrap.version@/css/bootstrap.css">
 <script src="/webjars/bootstrap/@bootstrap.version@/js/bootstrap.min.js"></script>
 <!-- ~~~~~~ jquery ui ~~~~~~ -->
 <script src="/webjars/jquery-ui/@jquery.ui.version@/jquery-ui.min.js"></script>
 <link rel="stylesheet"
 	href="/webjars/jquery-ui/@jquery.ui.version@/jquery-ui.min.css" />
 <!-- ~~~~~~ global ~~~~~~ -->
+<script src="/webjars/chartjs/@chart.js.version@/Chart.js"></script>
+<script
+	src="/webjars/chartjs-plugin-annotation/chartjs-plugin-annotation.js"></script>
+<!-- ~~~~~~ greenhouse ~~~~~~ -->
 <link rel="stylesheet" href="/styles/global.css">
 <script src="/js/SinglePageManager.js"></script>
 <script src="/js/pages/Home.js"></script>
+<script src="/js/pages/Sensors.js"></script>
+<script src="/js/components/Sensor.js"></script>
 </head>
 <body>
 	<div class="header">
 		<nav class="navbar navbar-expand-sm bg-dark">
 			<a class="navbar-brand" href="#">Smart Greenhouse</a>
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item"><a class="nav-link" href="./">Home</a></li>
-				<li class="nav-item"><a class="nav-link" href="./">Sensors</a></li>
+				<li class="nav-item"><a class="nav-link" href="#home"
+					onClick="loadPage('home')">Home</a></li>
+				<li class="nav-item"><a class="nav-link" href="#sensors"
+					onClick="loadPage('sensors')">Sensors</a></li>
 			</ul>
 		</nav>
 	</div>
 	<div class="container" id="content"></div>
 	<footer class="footer">
 		<div class="container text-center">
-			<span class="text-muted">Version: @pom.version@ |
-				Build time: @timestamp@ (GMT)</span>
+			<span class="text-muted">Version: @pom.version@ | Build time:
+				@timestamp@ (GMT)</span>
 		</div>
 	</footer>
 </body>
 <script>
-	var singlePageManager;
-	
+	var pageManager;
+
 	$(document).ready(function() {
-		singlePageManager = $("#content").SinglePageManager({
-			startPage : 'home'
-		});
+		var settings = {};
+
+		var hash = window.location.hash.replace('#', '');
+
+		if (!hash) {
+			settings['startPage'] = 'home';
+		} else {
+			settings['startPage'] = hash;
+		}
+
+		pageManager = $("#content").SinglePageManager(settings);
 	});
-	
-	
+
+	function loadPage(page) {
+		pageManager.SinglePageManager("onLoadPage", page);
+	}
 </script>
 </html>

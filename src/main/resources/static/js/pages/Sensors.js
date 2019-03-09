@@ -13,17 +13,17 @@
 	/**
 	 * The plugin name.
 	 */
-	var pluginName = "SinglePageManager";
+	var pluginName = "Sensors";
 
 	/**
-	 * pages
+	 * Sensors
 	 */
-	var pages = {};
+	var sensors = {};
 
 	var _default = {};
 
 	_default.settings = {
-		startPage : 'home'
+		columnClass : 'row'
 	};
 
 	_default.options = {};
@@ -37,7 +37,7 @@
 		}
 	};
 
-	var SinglePageManager = function(element, options) {
+	var Sensors = function(element, options) {
 
 		this.$element = $(element);
 		this.elementId = element.id;
@@ -47,35 +47,45 @@
 
 		return {
 			options : this.options,
-			init : $.proxy(this.init, this),
-			onLoadPage : $.proxy(this.onLoadPage, this)
+			init : $.proxy(this.init, this)
 		};
 	};
 
 	/**
 	 * Init.
 	 */
-	SinglePageManager.prototype.init = function(options) {
+	Sensors.prototype.init = function(options) {
 		this.options = $.extend({}, _default.settings, options);
-
-		this.initPages();
-		this.onLoadPage(this.options.startPage);
+		
+		this.loadSensors();
 	};
 
-	SinglePageManager.prototype.initPages = function() {
-		var home = $('<div></div>');
-		home.Home({});
-		pages['home'] = home;
-
-		var sensors = $('<div></div>');
-		sensors.Sensors({});
-		pages['sensors'] = sensors;
+	Sensors.prototype.loadSensors = function() {
+		var self = this;
+		$.ajax({
+			url : './getSensors',
+			type : 'POST',
+			contentType : 'application/json'
+		}).done(function(result) {
+			if (result) {
+				sensors = result;
+				self.initSensors();
+			}
+		});
 	};
 
-	SinglePageManager.prototype.onLoadPage = function(page) {
-		var page = pages[page];
-		this.$element.empty();
-		this.$element.append(page);
+	Sensors.prototype.initSensors = function() {
+		var self = this;
+
+		for ( var key in sensors) {
+			var col = $('<div></div>');
+			col.addClass(this.options.columnClass);
+			self.$element.append(col);
+			
+			col.Sensor({
+				sensor: sensors[key]
+			});
+		}
 	};
 
 	/**
@@ -105,8 +115,8 @@
 			} else if (typeof options === "boolean") {
 				result = _this;
 			} else {
-				$.data(this, pluginName, new SinglePageManager(this, $.extend(
-						true, {}, options)));
+				$.data(this, pluginName, new Sensors(this, $.extend(true, {},
+						options)));
 			}
 		});
 
